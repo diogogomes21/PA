@@ -21,12 +21,12 @@ extern "C" {
 
 #ifndef CMDLINE_PARSER_PACKAGE
 /** @brief the program name (used for printing errors) */
-#define CMDLINE_PARSER_PACKAGE "Example of .ggo file"
+#define CMDLINE_PARSER_PACKAGE "Ficha 6"
 #endif
 
 #ifndef CMDLINE_PARSER_PACKAGE_NAME
 /** @brief the complete program name (used for help and version) */
-#define CMDLINE_PARSER_PACKAGE_NAME "Example of .ggo file"
+#define CMDLINE_PARSER_PACKAGE_NAME "Ficha 6"
 #endif
 
 #ifndef CMDLINE_PARSER_VERSION
@@ -39,9 +39,13 @@ struct gengetopt_args_info
 {
   const char *help_help; /**< @brief Print help and exit help description.  */
   const char *version_help; /**< @brief Print version and exit help description.  */
+  int port_arg;	/**< @brief Port number.  */
+  char * port_orig;	/**< @brief Port number original value given at command line.  */
+  const char *port_help; /**< @brief Port number help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
+  unsigned int port_given ;	/**< @brief Whether port was given.  */
 
 } ;
 
