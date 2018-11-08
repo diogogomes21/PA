@@ -1,0 +1,7 @@
+
+a) int valor_octal = 01236;
+    Qual o valor decimal da variável “valor_octal”?
+
+valor_octal =  ?
+
+---------------------------------------------------------------------------------------------
