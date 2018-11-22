@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		printf("Client: IP=%s, port=%u\n", clnt_IP_S, ntohs(clnt_addr.sin_port));
+		close(clnt_sock);
 	}
 
 	close(tcp_server_socket);
