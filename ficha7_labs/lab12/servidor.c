@@ -16,65 +16,77 @@ void processaCliente(int fd);
 
 int main(int argc, char *argv[])
 {
-    int ser_fd, cli_fd;
-	socklen_t cli_len;
-    struct sockaddr_in ser_addr, cli_addr;
+  int ser_fd, cli_fd;
+  socklen_t cli_len;
+  struct sockaddr_in ser_addr, cli_addr;
 
-    /* Processa os parâmetros da linha de comando */
-    struct gengetopt_args_info args_info;
-    if (cmdline_parser(argc, argv, &args_info) != 0)
-        ERROR(C_ERRO_CMDLINE, "cmdline_parser");      
+  /* Processa os parâmetros da linha de comando */
+  struct gengetopt_args_info args_info;
+  if (cmdline_parser(argc, argv, &args_info) != 0)
+  ERROR(C_ERRO_CMDLINE, "cmdline_parser");
 
-    /* cria um socket */
-    if ((ser_fd = socket(AF_INET, SOCK_STREAM, 0)) == 1)
-        ERROR(C_ERRO_SOCKET, "socket");
+  /* cria um socket */
+  if ((ser_fd = socket(AF_INET, SOCK_STREAM, 0)) == 1)
+  ERROR(C_ERRO_SOCKET, "socket");
 
-    /* preenche estrutura: ip/porto do servidor */
-    memset(&ser_addr, 0, sizeof(ser_addr));
-    ser_addr.sin_family = AF_INET;
-    ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    ser_addr.sin_port = htons(args_info.porto_arg);
+  /* preenche estrutura: ip/porto do servidor */
+  memset(&ser_addr, 0, sizeof(ser_addr));
+  ser_addr.sin_family = AF_INET;
+  ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ser_addr.sin_port = htons(args_info.porto_arg);
 
-    /* disponibiliza o porto para escuta */
-    if (bind(ser_fd, (struct sockaddr *) &ser_addr, sizeof(ser_addr)) == -1){
-        ERROR(C_ERRO_BIND, "bind");
-    }
-    if (listen(ser_fd, 5) == 1){
-        ERROR(C_ERRO_LISTEN, "Listen");
-    }
-    printf("Servidor %s no porto %d\n", argv[0], args_info.porto_arg);
+  /* disponibiliza o porto para escuta */
+  if (bind(ser_fd, (struct sockaddr *) &ser_addr, sizeof(ser_addr)) == -1){
+    ERROR(C_ERRO_BIND, "bind");
+  }
+  if (listen(ser_fd, 5) == 1){
+    ERROR(C_ERRO_LISTEN, "Listen");
+  }
+  printf("Servidor %s no porto %d\n", argv[0], args_info.porto_arg);
 
-    /* ciclo infinito para atender todos os clientes */
-    while (1) {
-	cli_len = sizeof(struct sockaddr);
-        /* accept - bloqueante */
-        cli_fd = accept(ser_fd, (struct sockaddr *) &cli_addr, &cli_len);
-        if (cli_fd < 0){
-		if (errno == EINTR ){
-			printf("accept got EINTR:continuing\n");
-			continue;
-		}else{
-			ERROR(C_ERRO_ACCEPT, "Accept");
-		}
-	}
-
-	/* mostra informação sobre o cliente e processa pedido */
-	char ip[20];
-	DEBUG("cliente [%s@%d]",
-	 inet_ntop(AF_INET, &cli_addr.sin_addr, ip, sizeof(ip)),
-						 ntohs(cli_addr.sin_port));
-        processaCliente(cli_fd);
-        
-        /* liberta recursos utilizados com este cliente*/
-        close(cli_fd);
+  /* ciclo infinito para atender todos os clientes */
+  while (1) {
+    cli_len = sizeof(struct sockaddr);
+    /* accept - bloqueante */
+    cli_fd = accept(ser_fd, (struct sockaddr *) &cli_addr, &cli_len);
+    if (cli_fd < 0){
+      if (errno == EINTR ){
+        printf("accept got EINTR:continuing\n");
+        continue;
+      }else{
+        ERROR(C_ERRO_ACCEPT, "Accept");
+      }
     }
 
-    return (0);
+    /* mostra informação sobre o cliente e processa pedido */
+    char ip[20];
+    size_t num_clients = 0;
+    DEBUG("cliente [%s@%d]",
+    inet_ntop(AF_INET, &cli_addr.sin_addr, ip, sizeof(ip)),
+    ntohs(cli_addr.sin_port));
+
+    pid_t my_pid = fork();
+    if (my_pid == -1) {
+      ERROR(EXIT_FAILURE,"Cannot fork");
+    }
+    if (my_pid == 0) {
+      close(ser_fd);
+      processaCliente(cli_fd);
+      close(cli_fd);
+      exit(0);
+    }else{
+      num_clients++;
+      printf("[SERVER-main] client #%d\n", num_clients);
+      close(cli_fd);
+    }
+  }//while (1)
+
+  return (0);
 }
 
 
 
-void processaCliente(int fd) 
+void processaCliente(int fd)
 {
     uint16_t  n_cli, n_serv, res;
 
@@ -113,6 +125,6 @@ void processaCliente(int fd)
         /* envia resposta ao cliente */
         if (send(fd, &res, sizeof(uint16_t), 0) == -1)
             ERROR(C_ERRO_SEND, "send");
-            
+
     } while (n_cli != n_serv);
 }
