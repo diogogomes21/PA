@@ -21,7 +21,7 @@ int show_status(uint16_t status);
 int check_port(int port){
 	if( port <= 0 || port >= C_MAX_PORT ){
 		fprintf(stderr,"ERROR: invalid port '%d'. Must be within"
-				"[1,%d]\n", port, C_MAX_PORT-1);              
+				"[1,%d]\n", port, C_MAX_PORT-1);
 		exit(EXIT_FAILURE);
 	}
 	return port;
@@ -58,9 +58,9 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in udp_server_endpoint;
 	memset(&udp_server_endpoint, 0, sizeof(struct sockaddr_in));
 	udp_server_endpoint.sin_family = AF_INET;
-	udp_server_endpoint.sin_addr.s_addr = htonl(INADDR_ANY);  	
+	udp_server_endpoint.sin_addr.s_addr = htonl(INADDR_ANY);
 	udp_server_endpoint.sin_port = htons(remote_port);
-	int ret_bind = bind(udp_server_socket, 
+	int ret_bind = bind(udp_server_socket,
 	  (struct sockaddr *) &udp_server_endpoint, sizeof(struct sockaddr_in));
 	if( ret_bind == -1 ){
 		ERROR(EXIT_FAILURE,"Can't bind @udp_server_endpoint info");

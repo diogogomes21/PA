@@ -1,7 +1,7 @@
 /**
  * @brief Código auxiliar - utils
  * @author Rui Ferreira
- * @version 1.0 
+ * @version 1.1 
  */
  
 
@@ -44,6 +44,8 @@
 //**********************************************************************
 // 					números aleatóreos
 //**********************************************************************	
+//  antes dos includes
+#define _DEFAULT_SOURCE
 
 //	início do da função/main
 	srandom(time(NULL)*getpid());
