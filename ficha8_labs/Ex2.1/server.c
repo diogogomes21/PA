@@ -140,7 +140,6 @@ int my_select(int tcp_sock, int udp_sock){
       if (FD_ISSET(tcp_sock, &read_set)) {
         process_tcp(tcp_sock);
       }
-      printf("Eureka!\n");
       continue;
     }
   } // While(1)
@@ -209,6 +208,11 @@ int process_tcp(int tcp_sock){
     return -1;
   }
   printf("ok.  (%zd bytes sent)\n", tcp_sent_bytes);
+
+  // TCP IPv4: fecha socket (server)
+  if (close(tcp_client_socket) == -1){
+    ERROR(56, "Can't close tcp_client_socket (IPv4)");
+  }
   return 0;
 }
 
