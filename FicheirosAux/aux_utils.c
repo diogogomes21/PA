@@ -1,55 +1,55 @@
 /**
  * @brief Código auxiliar - utils
  * @author Rui Ferreira
- * @version 1.1 
+ * @version 1.1
  */
- 
+
 
 //**********************************************************************
 // 					contabilizar tempo
 //**********************************************************************
-// includes 
+// includes
 #include <sys/time.h>
 
     struct timeval tv_begin, tv_end;
 
 	// iniciar cronómetro
 	gettimeofday(&tv_begin, NULL);
-	
-// tarefa a cronometrar...	
-	
+
+// tarefa a cronometrar...
+
 	// parar cronómetro
 	gettimeofday(&tv_end, NULL);
-	
+
     // Mostrar informação sobre o tempo realizador
     printf("seconds: %ld | milliseconds %03ld \n", (tv_end.tv_sec - tv_begin.tv_sec), (tv_end.tv_usec - tv_begin.tv_usec) / 1000);
     printf("milliseconds %ld \n", (tv_end.tv_sec - tv_begin.tv_sec) * 1000 + (tv_end.tv_usec - tv_begin.tv_usec) / 1000);
-	
+
 
 //**********************************************************************
 //					esperar milisegundos
-//**********************************************************************	
-// includes 
+//**********************************************************************
+// includes
 #include <time.h>
 
-	// definição do tempo (ms) a esperar	
+	// definição do tempo (ms) a esperar
 	struct timespec delay_ms = {0};
 	delay_ms.tv_sec = (???segundos[>= 0])???);
-	delay_ms.tv_nsec = 1000000 * (???milisegundos[0-999])???);	
-	
+	delay_ms.tv_nsec = 1000000 * (???milisegundos[0-999])???);
+
 	// esperar
 	nanosleep(&delay_ms, NULL);
-	
-	
+
+
 //**********************************************************************
 // 					números aleatóreos
-//**********************************************************************	
+//**********************************************************************
 //  antes dos includes
 #define _DEFAULT_SOURCE
 
 //	início do da função/main
 	srandom(time(NULL)*getpid());
-	
+
 //	obter número aleatóreo (0 até N-1)
 	random() % 10;		// 0 até 9
 
@@ -57,7 +57,7 @@
 
 //**********************************************************************
 //			obter informação sobre o utilizador atual
-//**********************************************************************	
+//**********************************************************************
 #include <sys/types.h>
 #include <pwd.h>
 
@@ -81,3 +81,16 @@ struct passwd {
 		printf("%s\n", pw->pw_name);
 	}
 
+//**********************************************************************
+//			Check port
+//**********************************************************************
+
+#define C_MAX_PORT ((1<<16)-1)
+
+int check_port(int port){
+  if (port <= 0 || port > C_MAX_PORT) {
+    fprintf(stderr, "[ERROR] Invalid port '%d' [1,%d]\n", port,C_MAX_PORT);
+    exit(EXIT_FAILURE);
+  }
+  return port;
+}
